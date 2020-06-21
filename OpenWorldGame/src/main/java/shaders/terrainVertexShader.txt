@@ -1,0 +1,46 @@
+#version 400 core
+
+// Inputs are from a VAO.
+in vec3 position;
+in vec2 textureCoords;
+in vec3 normal;
+
+// Outputs are to fragment shader.
+out vec2 pass_textureCoords;
+out vec3 surfaceNormal;
+out vec3 toLightVector[4];
+out vec3 toCameraVector;
+out float visibility;
+
+// Uniforms are set by Java code.
+uniform mat4 transformationMatrix;
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform vec3 lightPosition[4];
+uniform vec4 clipPlane;
+
+const float fogDensity = 0.001;
+const float fogGradient = 1.5;
+
+void main(void) {
+	vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
+	vec4 positionRelativeToCam = viewMatrix * worldPosition;
+	// This is where on the canvas the vertex is drawn.
+	gl_Position = projectionMatrix * positionRelativeToCam;
+	
+	// Distance between vertex and clip plane.
+	gl_ClipDistance[0] = dot(worldPosition, clipPlane);
+	
+	pass_textureCoords = textureCoords;
+	
+	surfaceNormal = (transformationMatrix * vec4(normal, 0.0)).xyz;
+	
+	for (int i=0; i<4; i++) {
+		toLightVector[i] = lightPosition[i] - worldPosition.xyz;
+	}
+	toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
+	
+	float distanceFromCam = length(positionRelativeToCam.xyz);
+	visibility = exp(-pow((distanceFromCam*fogDensity), fogGradient));
+	visibility = clamp(visibility, 0.0, 1.0);
+}

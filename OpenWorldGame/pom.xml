@@ -1,0 +1,151 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>OpenWorldGame</groupId>
+  <artifactId>OpenWorldGame</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  
+  <properties>
+		<lwjgl.version>3.2.3</lwjgl.version>
+		<lwjgl.natives>natives-windows</lwjgl.natives>
+		<!-- I was getting an error for which Maven provides the following comment: This or
+		 a similar warning is emitted by a plugin that processes plain text files but has 
+		not been configured to use a specific file encoding. This should fix it.  -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
+  <profiles>
+        <profile>
+            <id>windows-profile</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <properties>
+                <native.target>natives-windows</native.target>
+            </properties>                
+        </profile>
+        <profile>
+            <id>linux-profile</id>
+            <activation>
+                <os>
+                    <family>Linux</family>
+                </os>
+            </activation>
+            <properties>
+                <native.target>natives-linux</native.target>
+            </properties>                
+        </profile>
+        <profile>
+            <id>OSX-profile</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <properties>
+                <native.target>natives-osx</native.target>
+            </properties>
+        </profile>
+    </profiles>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.lwjgl</groupId>
+				<artifactId>lwjgl-bom</artifactId>
+				<version>${lwjgl.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-glfw</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-opengl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl</artifactId>
+			<classifier>${lwjgl.natives}</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-glfw</artifactId>
+			<classifier>${lwjgl.natives}</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-opengl</artifactId>
+			<classifier>${lwjgl.natives}</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-stb</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-stb</artifactId>
+			<classifier>${lwjgl.natives}</classifier>
+		</dependency>
+		<dependency>
+		    <groupId>org.joml</groupId>
+		    <artifactId>joml</artifactId>
+		    <version>1.9.25</version>
+		</dependency>
+	</dependencies>
+	
+	<build>
+		<finalName>GameEngineTest-${version}</finalName>
+		<plugins>
+			<plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-assembly-plugin</artifactId>
+	            <version>3.1.1</version>
+	
+	            <configuration>
+	                <descriptorRefs>
+	                    <descriptorRef>jar-with-dependencies</descriptorRef>
+	                </descriptorRefs>
+	                <archive>
+	                	<manifest>
+	                		<mainClass>game.GameLoop</mainClass>
+	                	</manifest>
+	                </archive>
+	            </configuration>
+	
+	            <executions>
+	                <execution>
+	                    <id>make-assembly</id>
+	                    <phase>package</phase>
+	                    <goals>
+	                        <goal>single</goal>
+	                    </goals>
+	                </execution>
+	            </executions>
+
+        	</plugin>
+        	
+        	<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-compiler-plugin</artifactId>
+		        <configuration>
+		            <source>1.8</source>
+		            <target>1.8</target>
+		        </configuration>
+		    </plugin>
+        	
+		</plugins>
+	</build>
+  
+</project>
