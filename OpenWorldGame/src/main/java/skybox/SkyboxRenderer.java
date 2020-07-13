@@ -61,10 +61,10 @@ public class SkyboxRenderer {
 	};
 	
 	// This has to be in the order: R, L, T, Bo, Ba, F.
-	private static String[] TEXTURE_FILES = {"right", "left", "top",
-			"bottom", "back", "front"};
-	private static String[] NIGHT_TEXTURES = {"nightRight", "nightLeft", "nightTop",
-			"nightBottom", "nightBack", "nightFront"};
+	private static String[] TEXTURE_FILES = {"right.png", "left.png", "top.png",
+			"bottom.png", "back.png", "front.png"};
+	private static String[] NIGHT_TEXTURES = {"nightRight.png", "nightLeft.png", "nightTop.png",
+			"nightBottom.png", "nightBack.png", "nightFront.png"};
 	
 	private RawModel cube;
 	private int textureID;

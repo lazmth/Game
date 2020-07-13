@@ -22,6 +22,7 @@ import guis.GuiRenderer;
 import guis.GuiTexture;
 import loader.Loader;
 import loader.OBJLoader;
+import loader.StaticMeshesLoader;
 import models.RawModel;
 import models.TexturedModel;
 import normalMappingObjConverter.NormalMappedObjLoader;
@@ -56,14 +57,14 @@ public class GameLoop {
 		TextMaster.init(loader);
 		
 		RawModel testModelRaw = OBJLoader.loadObjModel("dragon", loader);
-		ModelTexture texture = new ModelTexture(loader.loadTexture("dragonTexture"));
+		ModelTexture texture = new ModelTexture(loader.loadTexture("dragonTexture.png"));
 		texture.setShineDamper(10);
 		texture.setReflectivity(1);
 		TexturedModel testModelTextured = new TexturedModel(testModelRaw, texture);
 		Entity testEntity = new Entity(testModelTextured, new Vector3f(0,-4,0),0,0,0,1);
 		
 		RawModel fernRaw = OBJLoader.loadObjModel("fern", loader);
-		ModelTexture fernTexture = new ModelTexture(loader.loadTexture("fern"));
+		ModelTexture fernTexture = new ModelTexture(loader.loadTexture("fern.png"));
 		fernTexture.setNumberOfRows(2);
 		fernTexture.setHasTransparency(true);
 		TexturedModel fernTexModel = new TexturedModel(fernRaw, fernTexture);
@@ -78,11 +79,11 @@ public class GameLoop {
 		lights.add(light2);
 		lights.add(sun);
 		
-		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
-		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
-		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
-		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
-		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
+		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2.png"));
+		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud.png"));
+		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers.png"));
+		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path.png"));
+		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap.png"));
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		Terrain terrain = new Terrain(0,0, loader, texturePack, blendMap, "heightMap");
 		
@@ -92,10 +93,10 @@ public class GameLoop {
 		TexturedModel bunnyTextured = new TexturedModel(bunnyRaw, texture);
 		
 		TexturedModel barrelModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("barrel", loader),
-				new ModelTexture(loader.loadTexture("barrel")));
+				new ModelTexture(loader.loadTexture("barrel.png")));
 		barrelModel.getTexture().setShineDamper(10);
 		barrelModel.getTexture().setReflectivity(0.5f);
-		barrelModel.getTexture().setNormalMapID(loader.loadTexture("barrelNormal"));
+		barrelModel.getTexture().setNormalMapID(loader.loadTexture("barrelNormal.png"));
 		
 		List<Terrain> terrains = new ArrayList<Terrain>();
 		List<Entity> entites = new ArrayList<Entity>();
@@ -110,12 +111,37 @@ public class GameLoop {
 		entites.add(player);
 		normalMappedEntities.add(new Entity(barrelModel, new Vector3f(160, 10, 160), 0, 0, 0, 1f));
 		
+		// STATIC MESH LOADER TESTING ///////////////
+		
+		ClassLoader classloader = GameLoop.class.getClassLoader();
+        System.out.println(classloader.getResource("game/GameLoop.class"));
+		
+		File file = new File("src/main/resources/" + "cowboyObj.obj");
+		File resourceFile = new File("src/main/resources/" + "cowboyObj.mtl");
+		
+		try {
+			TexturedModel[] cowboyOBJ = StaticMeshesLoader.load(
+					file.getAbsolutePath(),
+					"src/main/resources");
+			
+			Entity testCowboy = new Entity(cowboyOBJ[0], 1, new Vector3f(-20, 0, -20),0,0,0,4);
+			entites.add(testCowboy);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("whoops.");
+		}
+		
+		
+		//////////////////////////
+		
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
 //		GuiTexture gui = new GuiTexture(loader.loadTexture("brickSquare"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
 //		guis.add(gui);
 		
 		// Fonts for GUI Text.
-		FontType font = new FontType(loader.loadTexture("consolas"), new File("src/main/resources/" + "consolas.fnt"));
+		FontType font = new FontType(loader.loadTexture("consolas.png"), new File("src/main/resources/" + "consolas.fnt"));
 		GUIText text = new GUIText("This is a test :D", 6, font, new Vector2f(0.1f,0.1f), 0.75f, false);
 		float outlineR = 0.6f;
 		float outlineG = 0.0f;
@@ -132,7 +158,7 @@ public class GameLoop {
 		Vector3f terrainIntersection = new Vector3f(0.0f);
 		
 		ParticleMaster.init(loader, renderer.getProjectionMatrix());
-		ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particleAtlas"), 4);
+		ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particleAtlas.png"), 4);
 		
 		// ********************* Water Setup ***************************
 		
@@ -223,7 +249,7 @@ public class GameLoop {
 
 			Window.updateDisplay();
 			
-			System.out.println(Window.getFPS());
+//			System.out.println(Window.getFPS());
 		}
 		
 		TextMaster.cleanUp();

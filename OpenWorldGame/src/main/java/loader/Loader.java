@@ -244,7 +244,7 @@ public class Loader {
 	private ByteBuffer fileToBuffer(String fileName) {
 		RandomAccessFile textureFile = null;
 		try {
-			textureFile = new RandomAccessFile("src/main/resources/"+fileName+".png", "r");
+			textureFile = new RandomAccessFile("src/main/resources/"+fileName, "r");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			System.out.println("Tried open file but failed.");

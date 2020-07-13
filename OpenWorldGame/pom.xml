@@ -66,43 +66,66 @@
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl-glfw</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl-opengl</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl</artifactId>
 			<classifier>${lwjgl.natives}</classifier>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl-glfw</artifactId>
 			<classifier>${lwjgl.natives}</classifier>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl-opengl</artifactId>
 			<classifier>${lwjgl.natives}</classifier>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl-stb</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl-stb</artifactId>
 			<classifier>${lwjgl.natives}</classifier>
 		</dependency>
+		
 		<dependency>
 		    <groupId>org.joml</groupId>
 		    <artifactId>joml</artifactId>
 		    <version>1.9.25</version>
 		</dependency>
+		
+		<dependency>
+		    <groupId>org.lwjgl</groupId>
+		    <artifactId>lwjgl-assimp</artifactId>
+		    <version>${lwjgl.version}</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.lwjgl</groupId>
+		    <artifactId>lwjgl-assimp</artifactId>
+		    <version>${lwjgl.version}</version>
+		    <classifier>${native.target}</classifier>
+		    <scope>runtime</scope>
+		</dependency>
+		
 	</dependencies>
 	
 	<build>

@@ -19,8 +19,8 @@ import toolbox.Maths;
 
 public class WaterRenderer {
 	
-	private static final String DUDV_MAP = "waterDUDV";
-	private static final String NORMAL_MAP = "matchingNormalMap";
+	private static final String DUDV_MAP = "waterDUDV.png";
+	private static final String NORMAL_MAP = "matchingNormalMap.png";
 	private static float WAVE_SPEED = 0.06f;
 
 	private RawModel quad;
