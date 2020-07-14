@@ -116,16 +116,16 @@ public class GameLoop {
 		ClassLoader classloader = GameLoop.class.getClassLoader();
         System.out.println(classloader.getResource("game/GameLoop.class"));
 		
-		File file = new File("src/main/resources/" + "cowboyObj.obj");
-		File resourceFile = new File("src/main/resources/" + "cowboyObj.mtl");
+		File file = new File("src/main/resources/" + "cowboyFBX.fbx");
 		
 		try {
-			TexturedModel[] cowboyOBJ = StaticMeshesLoader.load(
+			TexturedModel[] testOBJMeshes = StaticMeshesLoader.load(
 					file.getAbsolutePath(),
 					"src/main/resources");
 			
-			Entity testCowboy = new Entity(cowboyOBJ[0], 1, new Vector3f(-20, 0, -20),0,0,0,4);
-			entites.add(testCowboy);
+			for (TexturedModel OBJMesh : testOBJMeshes) {
+				entites.add(new Entity(OBJMesh, 1, new Vector3f(-20, 0, -20),0,0,0,4));
+			}
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

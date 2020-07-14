@@ -49,7 +49,8 @@ public class StaticMeshesLoader {
 	    		resourcePath, 
 	    		texturesDir, 
 	    		// Some commonly used flags.
-	    		Assimp.aiProcess_JoinIdenticalVertices |
+	    		// FlipUVs could cause problems with some models.
+	    		Assimp.aiProcess_FlipUVs |
 	    		Assimp.aiProcess_Triangulate | 
 	    		Assimp.aiProcess_FixInfacingNormals);   
 	}
@@ -61,7 +62,7 @@ public class StaticMeshesLoader {
 	{
 	    AIScene aiScene = Assimp.aiImportFile(resourcePath, flags);
 	    if (aiScene == null) {
-	    	throw new Exception("Error loading model");
+	    	throw new Exception("Error loading model!");
 	    }
 	    
 	    // Texture loading.
@@ -77,10 +78,10 @@ public class StaticMeshesLoader {
 	    }
 	    
 	    // Mesh loading.
-	    // A scene can contain more than one mesh.
+	    // A scene can contain more than one mesh, i.e. for different components
+	    // of a model.
 	    int numMeshes = aiScene.mNumMeshes();
 	    PointerBuffer aiMeshes = aiScene.mMeshes();
-	    // Our implementation uses RawModels to hold mesh information.
 	    TexturedModel[] texturedModels = new TexturedModel[numMeshes];
 	    
 	    for (int i=0; i < numMeshes; i++) {
@@ -89,17 +90,17 @@ public class StaticMeshesLoader {
 	    	texturedModels[i] = mesh;
 	    }
 	    
+	    //TODO Textured models doesn't make sense - could be multiple components
+	    // of a model.
 	    return texturedModels;
 	}
-	
-	/**
-	 * This method assumes that the model file contains texture information.
-	 */
+
 	private static void processTexture(
 			AIMaterial aiMaterial,
 			List<ModelTexture> textures,
 			String texturesDir) throws Exception
-	{
+	{	
+		//TODO Also load other material properties, not just texture.
 		// An ASSIMP type for a string. This will hold the path to the 
 		// texture after it has been read.
 		AIString path = AIString.calloc();
@@ -116,7 +117,7 @@ public class StaticMeshesLoader {
 				null, 
 				null);
 		
-		// -1: failure. -3: out of memory.
+		// 0: success. -1: failure. -3: out of memory.
 		System.out.println("Tried to load a texture for material with result: " + result);
 		
 		String texturePath = path.dataString();
@@ -160,9 +161,7 @@ public class StaticMeshesLoader {
 			System.out.println("Couldn't load file texture. Defaulting.");
 		}
 		
-		TexturedModel texturedModel = new TexturedModel(model, texture);
-		
-		return texturedModel;
+		return new TexturedModel(model, texture);
 	}
 	
 	/**
@@ -205,7 +204,8 @@ public class StaticMeshesLoader {
 		for (int i=0; i < numTexCoords; i++) {
 			AIVector3D aiTextureCoord = aiTextureCoords.get();
 			textureCoords.add(aiTextureCoord.x());
-			textureCoords.add(1 - aiTextureCoord.y());
+			// Flipping the y coordinate is dealt with a flag when importing.
+			textureCoords.add(aiTextureCoord.y());
 		}
 	}
 	
