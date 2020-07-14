@@ -72,6 +72,23 @@ public class Loader {
 	}
 	
 	/**
+	 * Also loads bone information. Used for animated models.
+	 */
+	public RawModel loadToVAO(float[] positions, float[] textureCoords, 
+			float[] normals, int[] indices, int[] boneIDs, float[] boneWeights) {
+		
+		int vaoID = createVAO();
+		bindIndicesBuffer(indices);
+		storeDatainAttributeList(0, 3, positions);
+		storeDatainAttributeList(1, 2, textureCoords);
+		storeDatainAttributeList(2, 3, normals);
+		storeDataINTinAttributeList(3, 4, boneIDs);
+		storeDatainAttributeList(4, 4, boneWeights);
+		unbindVAO();
+		return new RawModel(vaoID, indices.length);
+	}
+	
+	/**
 	 * Also loads tangent information. Useful for normal mapping.
 	 */
 	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] tangents,
@@ -160,6 +177,16 @@ public class Loader {
 		FloatBuffer buffer = storeDataInFloatBuffer(data);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 		GL20.glVertexAttribPointer(attributeNumber, coordSize, GL11.GL_FLOAT, false, 0, 0);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+	}
+	
+	private void storeDataINTinAttributeList(int attributeNumber, int coordSize, int[] data) {
+		int vboID = GL15.glGenBuffers();
+		vbos.add(vboID);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
+		IntBuffer buffer = storeDataInIntBuffer(data);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+		GL30.glVertexAttribIPointer(attributeNumber, coordSize, GL11.GL_INT, 0, 0);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 	
