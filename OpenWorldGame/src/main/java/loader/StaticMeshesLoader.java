@@ -30,7 +30,7 @@ import toolbox.Utils;
 public class StaticMeshesLoader {
 	
 	// For loading to VAOs.
-	private static Loader loader = new Loader();
+	protected static Loader loader = new Loader();
 	
 	/**
 	 * A default call to load a model file with some commonly used flags.
@@ -95,7 +95,7 @@ public class StaticMeshesLoader {
 	    return texturedModels;
 	}
 
-	private static void processTexture(
+	protected static void processTexture(
 			AIMaterial aiMaterial,
 			List<ModelTexture> textures,
 			String texturesDir) throws Exception
@@ -171,7 +171,7 @@ public class StaticMeshesLoader {
 	 * @param vertices
 	 * 	- A list of vertices, used to store the output vertex information.
 	 */
-	private static void processVertices(AIMesh aiMesh, List<Float> vertices) {
+	protected static void processVertices(AIMesh aiMesh, List<Float> vertices) {
 		AIVector3D.Buffer aiVertices = aiMesh.mVertices();
 		
 		while (aiVertices.remaining() > 0) {
@@ -182,7 +182,7 @@ public class StaticMeshesLoader {
 		}
 	}
 	
-	private static void processNormals(AIMesh aiMesh, List<Float> normals) {
+	protected static void processNormals(AIMesh aiMesh, List<Float> normals) {
 		AIVector3D.Buffer aiNormals = aiMesh.mNormals();
 		
 		while (aiNormals != null && aiNormals.remaining() > 0) {
@@ -193,7 +193,7 @@ public class StaticMeshesLoader {
 		}
 	}
 	
-	private static void processTextureCoords(AIMesh aiMesh, List<Float> textureCoords) {
+	protected static void processTextureCoords(AIMesh aiMesh, List<Float> textureCoords) {
 		// A model can have multiple sets of texture coordinates, and so here
 		// we get the texture coords in a slightly different way to the normals etc.
 		AIVector3D.Buffer aiTextureCoords = aiMesh.mTextureCoords(0);
@@ -209,7 +209,7 @@ public class StaticMeshesLoader {
 		}
 	}
 	
-	private static void processIndices(AIMesh aiMesh, List<Integer> indices) {
+	protected static void processIndices(AIMesh aiMesh, List<Integer> indices) {
 		int numFaces = aiMesh.mNumFaces();
 		AIFace.Buffer aiFaces = aiMesh.mFaces();
 		
@@ -223,6 +223,4 @@ public class StaticMeshesLoader {
 			}
 		}
 	}
-	
-
 }
