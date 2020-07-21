@@ -3,7 +3,6 @@ package models.animatedModel;
 import org.joml.Matrix4f;
 
 import animation.Animation;
-import animation.Animator;
 import models.TexturedModel;
 
 /**
@@ -22,9 +21,6 @@ public class AnimatedModel {
 	private Joint rootJoint;
 	private int jointCount;
 	
-	// This will be used to update the model for each animation frame.
-	Animator animator;
-	
 	public AnimatedModel(TexturedModel texturedModel, Joint rootJoint, int jointCount) {
 		this.texturedModel = texturedModel;
 		this.rootJoint = rootJoint;
@@ -41,10 +37,6 @@ public class AnimatedModel {
 
 	public int getJointCount() {
 		return jointCount;
-	}
-	
-	public void doAnimation(Animation animation) {
-		animator.doAnimation(animation);
 	}
 	
 	/**

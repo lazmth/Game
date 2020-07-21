@@ -1,28 +1,48 @@
 package animation;
 
+import java.util.List;
+
 public class Animation {
 	
-	private final float length;
-	private final KeyFrame[] keyFrames;
+	private List<KeyFrame> keyFrames;
+	private int currentFrame;
+	private String name;
+	private double duration;
 	
-	/**
-	 * 
-	 * @param length
-	 * 		- The total length of the animation, in seconds.
-	 * @param keyFrames
-	 * 		- An array of key frames which make up the animation.
-	 */
-	public Animation(float length, KeyFrame[] keyFrames) {
-		this.length = length;
+	public Animation(String name, List<KeyFrame> keyFrames, double duration) {
+		this.name = name;
 		this.keyFrames = keyFrames;
+		this.duration = duration;
+		currentFrame = 0;
 	}
 
-	public float getLength() {
-		return length;
-	}
-
-	public KeyFrame[] getKeyFrames() {
+	public List<KeyFrame> getKeyFrames() {
 		return keyFrames;
 	}
+
+	public int getCurrentFrame() {
+		return currentFrame;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public double getDuration() {
+		return duration;
+	}
 	
+	public KeyFrame getNextFrame() {
+		update();
+		return this.keyFrames.get(currentFrame);
+	}
+	
+	public void update() {
+		int nextFrame = currentFrame + 1;
+		if (nextFrame > keyFrames.size() - 1) {
+			currentFrame = 0;
+		} else {
+			currentFrame = nextFrame;
+		}
+	}
 }

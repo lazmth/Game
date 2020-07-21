@@ -1,37 +1,26 @@
 package animation;
 
-import java.util.Map;
+import java.util.Arrays;
+
+import org.joml.Matrix4f;
 
 public class KeyFrame {
-
-	private final float timeStamp;
-	private final Map<String, JointTransform> pose;
 	
-	/**
-	 * 
-	 * @param timeStamp
-	 * 		- The time (in seconds) that this keyframe occurs into an
-	 * 		  animation.
-	 * @param pose
-	 * 		- The position and orientation of each joint during the keyframe,
-	 * 		  given as a joint transformation. Indexed by the joint name to
-	 * 		  which they apply.
-	 */
-	public KeyFrame(float timeStamp, Map<String, JointTransform> pose) {
-		this.timeStamp = timeStamp;
-		this.pose = pose;
+	public static final int MAX_JOINTS = 150;
+	
+	private final Matrix4f[] jointMatrices;
+	
+	public KeyFrame() {
+		jointMatrices = new Matrix4f[MAX_JOINTS];
+		Arrays.fill(jointMatrices, new Matrix4f());
 	}
-
-	public float getTimeStamp() {
-		return timeStamp;
+	
+	public Matrix4f[] getJointMatrices() {
+		return jointMatrices;
 	}
-
-	/**
-	 * 
-	 * @return - 
-	 */
-	public Map<String, JointTransform> getPose() {
-		return pose;
+	
+	public void setMatrix(int pos, Matrix4f jointMatrix) {
+		jointMatrices[pos] = jointMatrix;
 	}
 
 }

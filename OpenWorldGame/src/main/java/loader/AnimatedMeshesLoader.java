@@ -6,16 +6,25 @@ import java.util.List;
 import java.util.Map;
 
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.lwjgl.PointerBuffer;
+import org.lwjgl.assimp.AIAnimation;
 import org.lwjgl.assimp.AIBone;
 import org.lwjgl.assimp.AIMaterial;
 import org.lwjgl.assimp.AIMatrix4x4;
 import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AINode;
+import org.lwjgl.assimp.AINodeAnim;
+import org.lwjgl.assimp.AIQuatKey;
+import org.lwjgl.assimp.AIQuaternion;
 import org.lwjgl.assimp.AIScene;
+import org.lwjgl.assimp.AIVector3D;
+import org.lwjgl.assimp.AIVectorKey;
 import org.lwjgl.assimp.AIVertexWeight;
 import org.lwjgl.assimp.Assimp;
 
+import animation.Animation;
+import animation.KeyFrame;
 import models.RawModel;
 import models.TexturedModel;
 import models.animatedModel.AnimatedModel;
@@ -78,6 +87,13 @@ public class AnimatedMeshesLoader extends StaticMeshesLoader {
 	    
 	    // Extracting bone hierarchy and animation information
 	    AINode aiRootNode = aiScene.mRootNode();
+	    Matrix4f rootTransformation = toMatrix(aiRootNode.mTransformation());
+	    Node rootNode = processNodesHierarchy(aiRootNode, null);
+	    Map<String, Animation> animations = processAnimations(
+	    		aiScene,
+	    		boneList,
+	    		rootNode,
+	    		rootTransformation);
 	    // ...
 	    
 		return null;
@@ -191,6 +207,146 @@ public class AnimatedMeshesLoader extends StaticMeshesLoader {
 			}
 		}
 		
+	}
+	
+	private static Node processNodesHierarchy(AINode aiNode, Node parentNode) {
+		String nodeName = aiNode.mName().dataString();
+		Node node = new Node(nodeName, parentNode);
+		
+		int numChildren = aiNode.mNumChildren();
+		PointerBuffer aiChildren = aiNode.mChildren();
+		for (int i=0; i < numChildren; i++) {
+			AINode aiChildNode = AINode.create(aiChildren.get(i));
+			Node childNode = processNodesHierarchy(aiChildNode, node);
+			node.addChild(childNode);
+		}
+		
+		return node;
+	}
+	
+	/**
+	 * An AIScene can have more than one animation. This extracts them all.
+	 * 
+	 * Each 'channel' represents a bone in the animation with all of its
+	 * keyframes over time.
+	 * 
+	 * @param aiScene
+	 * @param boneList
+	 * @param rootNode
+	 * @param rootTransformation
+	 * @return
+	 */
+	private static Map<String, Animation> processAnimations(
+			AIScene aiScene,
+			List<Bone> boneList,
+			Node rootNode,
+			Matrix4f rootTransformation)
+	{
+		Map<String, Animation> animations = new HashMap<>();
+		
+		// Processing all animations
+		int numAnimations = aiScene.mNumAnimations();
+		PointerBuffer aiAnimations = aiScene.mAnimations();
+		for (int i=0; i < numAnimations; i++) {
+			AIAnimation aiAnimation = AIAnimation.create(aiAnimations.get(i));
+			
+			// Calculate transformation matrices for each node.
+			int numChannels = aiAnimation.mNumChannels();
+			PointerBuffer aiChannels = aiAnimation.mChannels();
+			for (int j=0; j < numChannels; j++) {
+				AINodeAnim aiNodeAnim = AINodeAnim.create(aiChannels.get(j));
+				String nodeName = aiNodeAnim.mNodeName().dataString();
+				Node node = rootNode.findByName(nodeName);
+				buildTransformationMatrices(aiNodeAnim, node);
+			}
+			
+			List<KeyFrame> keyFrames = buildKeyFrames(
+					boneList,
+					rootNode,
+					rootTransformation);
+			Animation animation = new Animation(
+					aiAnimation.mName().dataString(),
+					keyFrames,
+					aiAnimation.mDuration());
+			animations.put(animation.getName(), animation);
+		}
+		
+		return animations;
+	}
+	
+	private static void buildTransformationMatrices(
+			AINodeAnim aiNodeAnim,
+			Node node)
+	{
+		// All keyframes come in the correct chronological order.
+		int numFrames = aiNodeAnim.mNumPositionKeys();
+		// Time-Value pairs for keyframe components.
+		AIVectorKey.Buffer positionKeys = aiNodeAnim.mPositionKeys();
+		AIVectorKey.Buffer scalingKeys = aiNodeAnim.mScalingKeys();
+		AIQuatKey.Buffer rotationKeys = aiNodeAnim.mRotationKeys();
+		
+		for (int i=0; i < numFrames; i++) {
+			// Translation
+			AIVectorKey aiVecKey = positionKeys.get(i);
+			AIVector3D vec = aiVecKey.mValue();
+			
+			Matrix4f transformMatrix = new Matrix4f().translate(
+					vec.x(),
+					vec.y(),
+					vec.z());
+			
+			// Rotation
+			AIQuatKey quatKey = rotationKeys.get(i);
+			AIQuaternion aiQuat = quatKey.mValue();
+			org.joml.Quaternionf jomlQuat = new Quaternionf(
+					aiQuat.x(),
+					aiQuat.y(),
+					aiQuat.z(),
+					aiQuat.w());
+			transformMatrix.rotate(jomlQuat);
+			
+			// Scaling
+			if (i < aiNodeAnim.mNumScalingKeys()) {
+				aiVecKey = scalingKeys.get(i);
+				vec = aiVecKey.mValue();
+				transformMatrix.scale(
+						vec.x(),
+						vec.y(),
+						vec.z());
+			}
+			
+			node.addTransformation(transformMatrix);
+		}
+	}
+	
+	private static List<KeyFrame> buildKeyFrames(
+			List<Bone> boneList,
+			Node rootNode,
+			Matrix4f rootTransformation) 
+	{
+		List<KeyFrame> frameList = new ArrayList<>();
+		
+		int numFrames = rootNode.getNumAnimationFrames();
+		for (int i=0; i < numFrames; i++) {
+			KeyFrame frame = new KeyFrame();
+			frameList.add(frame);
+			
+			int numBones = boneList.size();
+			for (int j=0; j < numBones; j++) {
+				Bone bone = boneList.get(j);
+				Node node = rootNode.findByName(bone.getBoneName());
+				
+				// Taking transformation from bone-space to model-space 
+				// (relative to model's origin).
+				Matrix4f boneMatrix = Node.getParentTransforms(node, i);
+				boneMatrix.mul(bone.getOffsetMatrix());
+				boneMatrix = new Matrix4f(rootTransformation).mul(boneMatrix);
+				
+				frame.setMatrix(j, boneMatrix);
+			}
+		}
+		
+		return frameList;
 	}
 	
 	/**
