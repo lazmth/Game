@@ -94,9 +94,8 @@ public class AnimatedMeshesLoader extends StaticMeshesLoader {
 	    		boneList,
 	    		rootNode,
 	    		rootTransformation);
-	    // ...
 	    
-		return null;
+	    return new AnimatedModel(texturedModels, animations);
 	}
 	
 

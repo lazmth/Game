@@ -14,6 +14,7 @@ import entities.Entity;
 import entities.Light;
 import loader.Loader;
 import models.TexturedModel;
+import models.animatedModel.AnimatedModel;
 import normalMappingRenderer.NormalMappingRenderer;
 import shaders.BasicShader;
 import shaders.TerrainShader;
@@ -42,9 +43,13 @@ public class MasterRenderer {
 	private SkyboxRenderer skyboxRenderer;
 	private NormalMappingRenderer normalMapRenderer;
 	
+	private AnimatedModelRenderer animatedModelRenderer;
+	
 	private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
 	private Map<TexturedModel, List<Entity>> normalMappedEntities = new HashMap<TexturedModel, List<Entity>>();
 	private List<Terrain> terrains = new ArrayList<Terrain>();
+	
+	private List<AnimatedModel> animatedModels = new ArrayList<AnimatedModel>();
 	
 	public MasterRenderer(Loader loader) {
 		enableCulling();
@@ -54,6 +59,7 @@ public class MasterRenderer {
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
 		skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
 		normalMapRenderer = new NormalMappingRenderer(projectionMatrix);
+		animatedModelRenderer = new AnimatedModelRenderer();
 	}
 	
 	public static void enableCulling() {
@@ -68,7 +74,7 @@ public class MasterRenderer {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 	}
 	
-	public void renderScene(List<Entity> entities, List<Entity> normalMappedEntities, List<Terrain> terrains,
+	public void renderScene(List<Entity> entities, List<AnimatedModel> animatedModels, List<Entity> normalMappedEntities, List<Terrain> terrains,
 			List<Light> lightSources, Camera camera, Vector4f clipPlane) {
 		
 		for (Entity entity : entities) {
@@ -96,6 +102,8 @@ public class MasterRenderer {
 		basicShader.loadViewMatrix(camera);
 		entityRenderer.render(entities);
 		basicShader.stop();
+		
+		animatedModelRenderer.render(animatedModels, camera);
 		
 		normalMapRenderer.render(normalMappedEntities, clipPlane, lights, camera);
 		

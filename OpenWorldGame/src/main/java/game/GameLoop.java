@@ -20,11 +20,12 @@ import fontMeshCreator.GUIText;
 import fontRendering.TextMaster;
 import guis.GuiRenderer;
 import guis.GuiTexture;
+import loader.AnimatedMeshesLoader;
 import loader.Loader;
 import loader.OBJLoader;
-import loader.StaticMeshesLoader;
 import models.RawModel;
 import models.TexturedModel;
+import models.animatedModel.AnimatedModel;
 import normalMappingObjConverter.NormalMappedObjLoader;
 import particles.ParticleMaster;
 import particles.ParticleTexture;
@@ -118,14 +119,36 @@ public class GameLoop {
 		
 		File file = new File("src/main/resources/" + "cowboyFBX.fbx");
 		
+//		try {
+//			TexturedModel[] testOBJMeshes = StaticMeshesLoader.load(
+//					file.getAbsolutePath(),
+//					"src/main/resources");
+//			
+//			for (TexturedModel OBJMesh : testOBJMeshes) {
+//				entites.add(new Entity(OBJMesh, 1, new Vector3f(-20, 0, -20),0,0,0,0.01f));
+//			}
+//			
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			System.out.println("whoops.");
+//		}
+		
+		
+		//////////////////////////
+		
+		// ANIMATED MESH LOADER TESTING ///////////////
+		
+		List<AnimatedModel> animatedModels = new ArrayList<>();
+		
 		try {
-			TexturedModel[] testOBJMeshes = StaticMeshesLoader.load(
+			AnimatedModel testAnimatedModel = AnimatedMeshesLoader.loadAnimatedModel(
 					file.getAbsolutePath(),
 					"src/main/resources");
 			
-			for (TexturedModel OBJMesh : testOBJMeshes) {
-				entites.add(new Entity(OBJMesh, 1, new Vector3f(-20, 0, -20),0,0,0,4));
-			}
+			animatedModels.add(testAnimatedModel);
+			
+			
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -220,19 +243,19 @@ public class GameLoop {
 				float distance = 2 * (camera.getPosition().y - water.getHeight());
 				camera.getPosition().y -= distance;
 				camera.invertPitch();
-				renderer.renderScene(entites, normalMappedEntities, world.getTerrains(), lights, camera, new Vector4f(0, 1, 0, -water.getHeight() + 1f));
+				renderer.renderScene(entites, animatedModels, normalMappedEntities, world.getTerrains(), lights, camera, new Vector4f(0, 1, 0, -water.getHeight() + 1f));
 				camera.getPosition().y += distance;
 				camera.invertPitch();
 				fbos.unbindCurrentFrameBuffer();
 				
 				fbos.bindRefractionFrameBuffer();
-				renderer.renderScene(entites, normalMappedEntities, world.getTerrains(), lights, camera, new Vector4f(0, -1, 0, water.getHeight()));
+				renderer.renderScene(entites, animatedModels, normalMappedEntities, world.getTerrains(), lights, camera, new Vector4f(0, -1, 0, water.getHeight()));
 				fbos.unbindCurrentFrameBuffer();
 				GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 			}
 			
 			// Clip plane is set very high here just in case the request for clip disable above doesn't work.
-			renderer.renderScene(entites, normalMappedEntities, world.getTerrains(), lights, camera, new Vector4f(0, 10000, 0, 1000));
+			renderer.renderScene(entites, animatedModels, normalMappedEntities, world.getTerrains(), lights, camera, new Vector4f(0, 10000, 0, 1000));
 			waterRenderer.render(waters, camera, sun);
 			
 			ParticleMaster.renderParticles(camera);

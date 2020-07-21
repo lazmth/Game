@@ -1,70 +1,46 @@
 package models.animatedModel;
 
-import org.joml.Matrix4f;
+import java.util.Map;
 
 import animation.Animation;
 import models.TexturedModel;
 
-/**
- * Represents an entity which can be animated. Contains usual entity
- * information such as vertex positions and normals, along with additional
- * information for animation.
- * 
- * @author Billy
- *
- */
 public class AnimatedModel {
 	
-	private TexturedModel texturedModel;
-	
-	// This holds the joint hierarchy. Each joint has a list of its children.
-	private Joint rootJoint;
-	private int jointCount;
-	
-	public AnimatedModel(TexturedModel texturedModel, Joint rootJoint, int jointCount) {
-		this.texturedModel = texturedModel;
-		this.rootJoint = rootJoint;
-		this.jointCount = jointCount;
-	}
-
-	public TexturedModel getTexturedModel() {
-		return texturedModel;
-	}
-
-	public Joint getRootJoint() {
-		return rootJoint;
-	}
-
-	public int getJointCount() {
-		return jointCount;
-	}
+	private TexturedModel[] meshes;
+	private Map<String, Animation> animations;
+	private Animation currentAnimation;
 	
 	/**
-	 * @return
-	 * 		- The array of model-space joint transformations, which can be loaded to a vertex shader 
-	 * 		  for animating the model.
-	 */
-	public Matrix4f[] getJointTransforms() {
-		Matrix4f[] jointTransforms = new Matrix4f[jointCount];
-		addJointsToArray(rootJoint, jointTransforms);
-		return jointTransforms;
-		
-	}
-	
-	/**
-	 * Puts each joint transform into its correct place in the joint matrices list, according
-	 * to its joint index.
+	 * An animated model can be made up of multiple seperate meshes, which
+	 * are essentially just seperate textured models. This is done in 
+	 * modelling software when to ease the creation of models.
 	 * 
-	 * @param headJoint
-	 * 		- The current joint, at the head of its tree.
-	 * @param jointMatrices
-	 * 		- The array of matrices in to which the joints should be added.
+	 * @param meshes
+	 * @param animations
 	 */
-	private void addJointsToArray(Joint headJoint, Matrix4f[] jointMatrices) {
-		jointMatrices[headJoint.index] = headJoint.getAnimatedTransform();
-		for (Joint childJoint : headJoint.children) {
-			addJointsToArray(childJoint, jointMatrices);
-		}
+	public AnimatedModel(TexturedModel[] meshes, Map<String, Animation> animations) {
+		this.meshes = meshes;
+		this.animations = animations;
 	}
-
+	
+	public String[] getAvailableAnimations() {
+		return (String[]) animations.keySet().toArray();
+	}
+	
+	public Animation getAnimation(String name) {
+		return animations.get(name);
+	}
+	
+	public Animation getCurrentAnimation() {
+		return currentAnimation;
+	}
+	
+	public void setCurrentAnimation(Animation animation) {
+		this.currentAnimation = animation;
+	}
+	
+	public TexturedModel[] getMeshes() {
+		return meshes;
+	}
 }
