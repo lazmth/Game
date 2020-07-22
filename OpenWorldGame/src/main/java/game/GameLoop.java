@@ -149,7 +149,9 @@ public class GameLoop {
 			animatedModels.add(testAnimatedModel);
 			
 			
-			
+			for (Object animation : testAnimatedModel.getAvailableAnimations()) {
+				System.out.println(animation);
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

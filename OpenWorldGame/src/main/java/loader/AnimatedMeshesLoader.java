@@ -44,6 +44,7 @@ public class AnimatedMeshesLoader extends StaticMeshesLoader {
 				resourcePath,
 				texturesDir,
 				// Some commonly used flags.
+				Assimp.aiProcess_FlipUVs |
 				Assimp.aiProcess_GenSmoothNormals |
 				Assimp.aiProcess_JoinIdenticalVertices |
 				Assimp.aiProcess_Triangulate |
@@ -169,7 +170,7 @@ public class AnimatedMeshesLoader extends StaticMeshesLoader {
 			int numWeights = aiBone.mNumWeights();
 			AIVertexWeight.Buffer aiWeights = aiBone.mWeights();
 			
-			for (int j=0; i < numWeights; j++) {
+			for (int j=0; j < numWeights; j++) {
 				AIVertexWeight aiWeight = aiWeights.get(j);
 				VertexWeight vw = new VertexWeight(
 						bone.getBoneID(),

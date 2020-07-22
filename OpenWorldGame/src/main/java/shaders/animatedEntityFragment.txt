@@ -12,9 +12,8 @@ uniform vec3 lightPosition;
 
 void main(void){
 	
-	vec4 diffuseColour = texture(diffuseMap, pass_textureCoords);		
-	vec3 unitNormal = normalize(pass_normal);
-	float diffuseLight = max(dot(-lightDirection, unitNormal), 0.0) * lightBias.x + lightBias.y;
-	out_colour = diffuseColour * diffuseLight;
+	vec4 diffuseColour = texture(diffuseMap, pass_textureCoords);
+	
+	out_colour = diffuseColour;
 	
 }

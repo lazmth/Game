@@ -13,7 +13,9 @@ out vec2 pass_textureCoords;
 out vec3 pass_normal;
 
 uniform mat4 jointTransforms[MAX_JOINTS];
-uniform mat4 projectionViewMatrix;
+
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
 
 void main(void){
 	
@@ -29,7 +31,8 @@ void main(void){
 		totalNormal += worldNormal * in_weights[i];
 	}
 	
-	gl_Position = projectionViewMatrix * totalLocalPos;
+	gl_Position = projectionMatrix * viewMatrix * vec4(in_position, 1.0);
+	//gl_Position = projectionViewMatrix * totalLocalPos;
 	pass_normal = totalNormal.xyz;
 	pass_textureCoords = in_textureCoords;
 

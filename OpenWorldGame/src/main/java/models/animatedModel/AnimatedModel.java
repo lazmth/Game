@@ -24,8 +24,9 @@ public class AnimatedModel {
 		this.animations = animations;
 	}
 	
-	public String[] getAvailableAnimations() {
-		return (String[]) animations.keySet().toArray();
+	public Object[] getAvailableAnimations() {
+		// Cannot upcast to string.
+		return animations.keySet().toArray();
 	}
 	
 	public Animation getAnimation(String name) {

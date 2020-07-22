@@ -59,7 +59,7 @@ public class MasterRenderer {
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
 		skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
 		normalMapRenderer = new NormalMappingRenderer(projectionMatrix);
-		animatedModelRenderer = new AnimatedModelRenderer();
+		animatedModelRenderer = new AnimatedModelRenderer(projectionMatrix);
 	}
 	
 	public static void enableCulling() {
@@ -74,7 +74,7 @@ public class MasterRenderer {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 	}
 	
-	public void renderScene(List<Entity> entities, List<AnimatedModel> animatedModels, List<Entity> normalMappedEntities, List<Terrain> terrains,
+	public void renderScene(List<Entity> entities, List<AnimatedModel> animatedModelsIN, List<Entity> normalMappedEntities, List<Terrain> terrains,
 			List<Light> lightSources, Camera camera, Vector4f clipPlane) {
 		
 		for (Entity entity : entities) {
@@ -87,6 +87,10 @@ public class MasterRenderer {
 		
 		for (Terrain terrain : terrains) {
 			processTerrain(terrain);
+		}
+		
+		for (AnimatedModel model : animatedModelsIN) {
+			processAnimatedModel(model);
 		}
 		
 		render(lightSources, camera, clipPlane);
@@ -120,6 +124,7 @@ public class MasterRenderer {
 		terrains.clear();
 		entities.clear();
 		normalMappedEntities.clear();
+		animatedModels.clear();
 	}
 	
 	public void processTerrain(Terrain terrain) {
@@ -136,6 +141,10 @@ public class MasterRenderer {
 			newBatch.add(entity);
 			entities.put(entityModel, newBatch);
 		}
+	}
+	
+	public void processAnimatedModel(AnimatedModel model) {
+		this.animatedModels.add(model);
 	}
 	
 	public void processNormalMappedEntity(Entity entity) {
