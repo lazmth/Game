@@ -91,8 +91,8 @@ public class GameLoop {
 			
 			if (Window.isKeyPressed(GLFW.GLFW_KEY_Y)) {
 				if (scene.getPlayer().getModel().getCurrentAnimation().getName().equals("Armature|Star Jump")) {
-					scene.getPlayer().setCurrentAnimation("Armature|Baked Walk");
-				} else if (scene.getPlayer().getModel().getCurrentAnimation().getName().equals("Armature|Baked Walk")) { 
+					scene.getPlayer().setCurrentAnimation("Armature|Walk 2");
+				} else if (scene.getPlayer().getModel().getCurrentAnimation().getName().equals("Armature|Walk 2")) { 
 					scene.getPlayer().setCurrentAnimation("Armature|Star Jump");
 				}
 				

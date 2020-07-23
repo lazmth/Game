@@ -279,6 +279,12 @@ public class AnimatedMeshesLoader extends StaticMeshesLoader {
 			AINodeAnim aiNodeAnim,
 			Node node)
 	{
+		// The node tree is reused and so it must be cleared.
+		// This method is called once per bone, per animation. Without clearing,
+		// animation 2 onwards would be tacked onto the end of the first 
+		// transformations, chaining all of the animations together.
+		node.resetTransformations();
+		
 		// All keyframes come in the correct chronological order.
 		int numFrames = aiNodeAnim.mNumPositionKeys();
 		// Time-Value pairs for keyframe components.

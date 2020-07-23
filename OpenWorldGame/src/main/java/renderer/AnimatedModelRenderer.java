@@ -29,12 +29,7 @@ public class AnimatedModelRenderer {
 	
 	public void render(List<AnimatedEntity> entities, Camera camera) {
 		prepare(camera);
-		
-		if (entities.get(0).getModel().getCurrentAnimation() != null) {
-			int currentFrame = entities.get(0).getModel().getCurrentAnimation().getCurrentFrame();
-			shader.loadJointTransforms(entities.get(0).getModel().getCurrentAnimation().getKeyFrames().get(currentFrame).getJointMatrices());
-		}
-		
+
 		shader.loadModelMatrix(Maths.createTransformationMatrix(
 				entities.get(0).getPosition(), 
 				entities.get(0).getRotX(), 
@@ -44,6 +39,11 @@ public class AnimatedModelRenderer {
 		
 		
 		for (AnimatedEntity entity : entities) {
+			if (entity.getModel().getCurrentAnimation() != null) {
+				int currentFrame = entity.getModel().getCurrentAnimation().getCurrentFrame();
+				shader.loadJointTransforms(entity.getModel().getCurrentAnimation().getKeyFrames().get(currentFrame).getJointMatrices());
+			}
+			
 			// All meshes have the same texture. Use that of the 1st for all.
 			//TODO Will need to do some work because different meshes may have
 			// different materials (different reflective properties etc).

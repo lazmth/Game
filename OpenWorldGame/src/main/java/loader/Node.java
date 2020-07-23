@@ -28,7 +28,7 @@ import org.joml.Matrix4f;
 public class Node {
 	
 	private final List<Node> children;
-	private final List<Matrix4f> transformations;
+	private List<Matrix4f> transformations;
 	private final String name;
 	private final Node parent;
 	
@@ -131,6 +131,10 @@ public class Node {
 
 	public Node getParent() {
 		return parent;
+	}
+	
+	public void resetTransformations() {
+		this.transformations = new ArrayList<>();
 	}
 	
 	

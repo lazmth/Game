@@ -108,7 +108,7 @@ public class Scene {
 		Animation bakedAnimation = testAnimatedModel.getAnimation("Armature|Star Jump");
 		testAnimatedModel.setCurrentAnimation(bakedAnimation);
 		
-		player = new Player(testAnimatedModel, new Vector3f(0,0,0), 0, 0, 0, 1);
+		player = new Player(testAnimatedModel, new Vector3f(0,0,0), 0, 0, 0, 0.08f);
 		animatedEntities.add(player);
 
 	}
