@@ -9,7 +9,8 @@ import toolbox.Maths;
 public class AnimatedModelShader extends ShaderProgram {
 	
 	// max number of joints in a skeleton. used for setting the size of the array.
-	private static final int MAX_JOINTS = 13;
+	//TODO currently set also in keyFrame class.
+	private static final int MAX_JOINTS = 150;
 	
 	private static final String VERTEX_FILE = "src/main/java/shaders/animatedEntityVertex.txt";
 	private static final String FRAGMENT_FILE = "src/main/java/shaders/animatedEntityFragment.txt";

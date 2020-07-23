@@ -11,6 +11,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
+import animation.Animation;
+import entities.AnimatedEntity;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
@@ -139,19 +141,31 @@ public class GameLoop {
 		
 		// ANIMATED MESH LOADER TESTING ///////////////
 		
-		List<AnimatedModel> animatedModels = new ArrayList<>();
+		List<AnimatedEntity> animatedEntities = new ArrayList<>();
 		
 		try {
 			AnimatedModel testAnimatedModel = AnimatedMeshesLoader.loadAnimatedModel(
 					file.getAbsolutePath(),
 					"src/main/resources");
 			
-			animatedModels.add(testAnimatedModel);
+			Object[] animations = testAnimatedModel.getAvailableAnimations();
+			
+			Animation bakedAnimation = testAnimatedModel.getAnimation("Armature|Baked Walk");
+			testAnimatedModel.setCurrentAnimation(bakedAnimation);
+			animatedEntities.add(new AnimatedEntity(
+					testAnimatedModel,
+					new Vector3f(30, 2, 2),
+					0,
+					0,
+					0,
+					1));
 			
 			
 			for (Object animation : testAnimatedModel.getAvailableAnimations()) {
 				System.out.println(animation);
 			}
+			
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -225,6 +239,11 @@ public class GameLoop {
 					System.out.println("Benchmark is currently active.");
 				}
 			}
+			animatedEntities.get(0).getModel().getCurrentAnimation().update();
+			
+			if (Window.isKeyPressed(GLFW.GLFW_KEY_N)) {
+				animatedEntities.get(0).getModel().getCurrentAnimation().update();
+			}
 			
 			if (benchmarkActive) {
 				benchmarkFinished = Window.benchMark();
@@ -245,25 +264,25 @@ public class GameLoop {
 				float distance = 2 * (camera.getPosition().y - water.getHeight());
 				camera.getPosition().y -= distance;
 				camera.invertPitch();
-				renderer.renderScene(entites, animatedModels, normalMappedEntities, world.getTerrains(), lights, camera, new Vector4f(0, 1, 0, -water.getHeight() + 1f));
+				renderer.renderScene(entites, animatedEntities, normalMappedEntities, world.getTerrains(), lights, camera, new Vector4f(0, 1, 0, -water.getHeight() + 1f));
 				camera.getPosition().y += distance;
 				camera.invertPitch();
 				fbos.unbindCurrentFrameBuffer();
 				
 				fbos.bindRefractionFrameBuffer();
-				renderer.renderScene(entites, animatedModels, normalMappedEntities, world.getTerrains(), lights, camera, new Vector4f(0, -1, 0, water.getHeight()));
+				renderer.renderScene(entites, animatedEntities, normalMappedEntities, world.getTerrains(), lights, camera, new Vector4f(0, -1, 0, water.getHeight()));
 				fbos.unbindCurrentFrameBuffer();
 				GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 			}
 			
 			// Clip plane is set very high here just in case the request for clip disable above doesn't work.
-			renderer.renderScene(entites, animatedModels, normalMappedEntities, world.getTerrains(), lights, camera, new Vector4f(0, 10000, 0, 1000));
+			renderer.renderScene(entites, animatedEntities, normalMappedEntities, world.getTerrains(), lights, camera, new Vector4f(0, 10000, 0, 1000));
 			waterRenderer.render(waters, camera, sun);
 			
 			ParticleMaster.renderParticles(camera);
 			
 			guiRenderer.render(guis);
-			TextMaster.render();
+			//TextMaster.render();
 			
 			text.setOutlineColour(outlineR, outlineG, outlineB);
 			outlineR += 0.0001f;
@@ -274,7 +293,7 @@ public class GameLoop {
 
 			Window.updateDisplay();
 			
-//			System.out.println(Window.getFPS());
+			System.out.println(Window.getFPS());
 		}
 		
 		TextMaster.cleanUp();

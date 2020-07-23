@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import entities.AnimatedEntity;
 import entities.Camera;
 import models.RawModel;
 import models.TexturedModel;
@@ -19,8 +20,6 @@ public class AnimatedModelRenderer {
 		
 	private AnimatedModelShader shader;
 	
-	private static Matrix4f projectionMatrix = null;
-	
 	public AnimatedModelRenderer(Matrix4f projectionMatrix) {
 		shader = new AnimatedModelShader();
 		shader.start();
@@ -28,21 +27,30 @@ public class AnimatedModelRenderer {
 		shader.stop();
 	}
 	
-	public void render(List<AnimatedModel> entities, Camera camera) {
+	public void render(List<AnimatedEntity> entities, Camera camera) {
 		prepare(camera);
 		
-		for (AnimatedModel entity : entities) {
+		if (entities.get(0).getModel().getCurrentAnimation() != null) {
+			int currentFrame = entities.get(0).getModel().getCurrentAnimation().getCurrentFrame();
+			shader.loadJointTransforms(entities.get(0).getModel().getCurrentAnimation().getKeyFrames().get(currentFrame).getJointMatrices());
+		}
+		
+		shader.loadModelMatrix(Maths.createTransformationMatrix(
+				entities.get(0).getPosition(), 
+				entities.get(0).getRotX(), 
+				entities.get(0).getRotY(), 
+				entities.get(0).getRotZ(), 
+				entities.get(0).getScale()));
+		
+		
+		for (AnimatedEntity entity : entities) {
 			// All meshes have the same texture. Use that of the 1st for all.
 			//TODO Will need to do some work because different meshes may have
 			// different materials (different reflective properties etc).
-			int texture = entity.getMeshes()[0].getTexture().getTextureID();
+			int texture = entity.getModel().getMeshes()[0].getTexture().getTextureID();
 			
-			
-			
-			//shader.loadJointTransforms(entity.getJointTransforms());
-			
-			for (int i=0; i < entity.getMeshes().length; i++) {
-				TexturedModel mesh = entity.getMeshes()[i];
+			for (int i=0; i < entity.getModel().getMeshes().length; i++) {
+				TexturedModel mesh = entity.getModel().getMeshes()[i];
 				RawModel rawModel = mesh.getRawModel();
 				
 				GL30.glBindVertexArray(rawModel.getVaoID());

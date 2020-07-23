@@ -9,6 +9,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 
+import entities.AnimatedEntity;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
@@ -49,7 +50,7 @@ public class MasterRenderer {
 	private Map<TexturedModel, List<Entity>> normalMappedEntities = new HashMap<TexturedModel, List<Entity>>();
 	private List<Terrain> terrains = new ArrayList<Terrain>();
 	
-	private List<AnimatedModel> animatedModels = new ArrayList<AnimatedModel>();
+	private List<AnimatedEntity> animatedEntities = new ArrayList<AnimatedEntity>();
 	
 	public MasterRenderer(Loader loader) {
 		enableCulling();
@@ -74,7 +75,7 @@ public class MasterRenderer {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 	}
 	
-	public void renderScene(List<Entity> entities, List<AnimatedModel> animatedModelsIN, List<Entity> normalMappedEntities, List<Terrain> terrains,
+	public void renderScene(List<Entity> entities, List<AnimatedEntity> animatedEntities, List<Entity> normalMappedEntities, List<Terrain> terrains,
 			List<Light> lightSources, Camera camera, Vector4f clipPlane) {
 		
 		for (Entity entity : entities) {
@@ -89,8 +90,8 @@ public class MasterRenderer {
 			processTerrain(terrain);
 		}
 		
-		for (AnimatedModel model : animatedModelsIN) {
-			processAnimatedModel(model);
+		for (AnimatedEntity entity : animatedEntities) {
+			processAnimatedModel(entity);
 		}
 		
 		render(lightSources, camera, clipPlane);
@@ -107,7 +108,7 @@ public class MasterRenderer {
 		entityRenderer.render(entities);
 		basicShader.stop();
 		
-		animatedModelRenderer.render(animatedModels, camera);
+		animatedModelRenderer.render(animatedEntities, camera);
 		
 		normalMapRenderer.render(normalMappedEntities, clipPlane, lights, camera);
 		
@@ -124,7 +125,7 @@ public class MasterRenderer {
 		terrains.clear();
 		entities.clear();
 		normalMappedEntities.clear();
-		animatedModels.clear();
+		animatedEntities.clear();
 	}
 	
 	public void processTerrain(Terrain terrain) {
@@ -143,8 +144,8 @@ public class MasterRenderer {
 		}
 	}
 	
-	public void processAnimatedModel(AnimatedModel model) {
-		this.animatedModels.add(model);
+	public void processAnimatedModel(AnimatedEntity entity) {
+		this.animatedEntities.add(entity);
 	}
 	
 	public void processNormalMappedEntity(Entity entity) {
