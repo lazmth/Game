@@ -50,8 +50,8 @@ import timer.Timer;
 public class Window {
 
 	private static String TITLE = "Test Game";
-	private static final int WIDTH = 1280;
-	private static final int HEIGHT = 720;
+	private static final int WIDTH = 1700;
+	private static final int HEIGHT = 955;
 	private static final boolean VSYNC = true;
 	
 	private static long windowID;

@@ -13,11 +13,23 @@ public class Animation {
 	
 	private double timeCounter = 0;
 	
-	public Animation(String name, List<KeyFrame> keyFrames, double duration) {
+	private double durationSeconds;
+	
+	/**
+	 * 
+	 * @param name
+	 * @param keyFrames
+	 * @param duration
+	 * 	- Measured in 'ticks!'.
+	 * @param ticksPerSec
+	 */
+	public Animation(String name, List<KeyFrame> keyFrames, double duration, double ticksPerSec) {
 		this.name = name;
 		this.keyFrames = keyFrames;
 		this.duration = duration;
 		currentFrame = 0;
+		
+		durationSeconds = duration / ticksPerSec;
 	}
 
 	public List<KeyFrame> getKeyFrames() {
@@ -41,27 +53,28 @@ public class Animation {
 		return this.keyFrames.get(currentFrame);
 	}
 	
+	public void reset() {
+		currentFrame = 0;
+		timeCounter = 0;
+	}
+	
 	public void update() {
-		timeCounter += Window.getLastFrameTime();
-		
-		double frameLength = duration / (keyFrames.size() * 200);
-		System.out.println(frameLength);
-		
-		while (timeCounter >= frameLength) {
-			currentFrame++;
-			timeCounter -= frameLength;
-			currentFrame %= keyFrames.size();
-		}
-		
-		
-		
-		
-		
-//		int nextFrame = currentFrame + 1;
-//		if (nextFrame > keyFrames.size() - 1) {
-//			currentFrame = 0;
-//		} else {
-//			currentFrame = nextFrame;
+//		timeCounter += Window.getLastFrameTime();
+//		
+//		double frameLength = durationSeconds / (keyFrames.size());
+//		
+//		while (timeCounter >= frameLength) {
+//			currentFrame++;
+//			timeCounter -= frameLength;
+//			currentFrame %= keyFrames.size();
 //		}
+
+		
+		int nextFrame = currentFrame + 1;
+		if (nextFrame > keyFrames.size() - 1) {
+			currentFrame = 0;
+		} else {
+			currentFrame = nextFrame;
+		}
 	}
 }

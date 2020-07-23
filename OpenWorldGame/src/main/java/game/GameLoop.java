@@ -105,13 +105,11 @@ public class GameLoop {
 		List<Entity> entites = new ArrayList<Entity>();
 		List<Entity> normalMappedEntities = new ArrayList<Entity>();
 		
-		Player player = new Player(bunnyTextured, new Vector3f(0,0,0), 0, 0, 0, 1);
 		
 //		terrains.add(terrain);
 //		terrains.add(terrain2);
 		entites.add(fern1);
 		entites.add(fern2);
-		entites.add(player);
 		normalMappedEntities.add(new Entity(barrelModel, new Vector3f(160, 10, 160), 0, 0, 0, 1f));
 		
 		// STATIC MESH LOADER TESTING ///////////////
@@ -119,7 +117,7 @@ public class GameLoop {
 		ClassLoader classloader = GameLoop.class.getClassLoader();
         System.out.println(classloader.getResource("game/GameLoop.class"));
 		
-		File file = new File("src/main/resources/" + "cowboyFBX.fbx");
+		File file = new File("src/main/resources/" + "cowboyNEW.fbx");
 		
 //		try {
 //			TexturedModel[] testOBJMeshes = StaticMeshesLoader.load(
@@ -143,22 +141,23 @@ public class GameLoop {
 		
 		List<AnimatedEntity> animatedEntities = new ArrayList<>();
 		
+		Player player = null;
+		AnimatedModel testAnimatedModel = null;
+		
 		try {
-			AnimatedModel testAnimatedModel = AnimatedMeshesLoader.loadAnimatedModel(
+			testAnimatedModel = AnimatedMeshesLoader.loadAnimatedModel(
 					file.getAbsolutePath(),
 					"src/main/resources");
 			
 			Object[] animations = testAnimatedModel.getAvailableAnimations();
 			
-			Animation bakedAnimation = testAnimatedModel.getAnimation("Armature|Baked Walk");
+			Animation bakedAnimation = testAnimatedModel.getAnimation("Armature|Star Jump");
 			testAnimatedModel.setCurrentAnimation(bakedAnimation);
-			animatedEntities.add(new AnimatedEntity(
-					testAnimatedModel,
-					new Vector3f(30, 2, 2),
-					0,
-					0,
-					0,
-					1));
+			
+			
+			player = new Player(testAnimatedModel, new Vector3f(0,0,0), 0, 0, 0, 1);
+			
+			animatedEntities.add(player);
 			
 			
 			for (Object animation : testAnimatedModel.getAvailableAnimations()) {
@@ -238,10 +237,23 @@ public class GameLoop {
 				} else {
 					System.out.println("Benchmark is currently active.");
 				}
-			}
-			animatedEntities.get(0).getModel().getCurrentAnimation().update();
+			} 
 			
-			if (Window.isKeyPressed(GLFW.GLFW_KEY_N)) {
+			if (Window.isKeyPressed(GLFW.GLFW_KEY_Y)) {
+				if (testAnimatedModel.getCurrentAnimation().getName().equals("Armature|Star Jump")) {
+					System.out.println("Now doing walk.");
+					Animation bakedAnimation = testAnimatedModel.getAnimation("Armature|Baked Walk");
+					bakedAnimation.reset();
+					testAnimatedModel.setCurrentAnimation(bakedAnimation);
+				} else if (testAnimatedModel.getCurrentAnimation().getName().equals("Armature|Baked Walk")) { 
+					Animation bakedAnimation = testAnimatedModel.getAnimation("Armature|Star Jump");
+					System.out.println("Now doing run.");
+					bakedAnimation.reset();
+					testAnimatedModel.setCurrentAnimation(bakedAnimation);
+				}
+				
+			}
+			if (Window.isKeyPressed(GLFW.GLFW_KEY_U)) {
 				animatedEntities.get(0).getModel().getCurrentAnimation().update();
 			}
 			
@@ -293,7 +305,7 @@ public class GameLoop {
 
 			Window.updateDisplay();
 			
-			System.out.println(Window.getFPS());
+			//System.out.println(Window.getFPS());
 		}
 		
 		TextMaster.cleanUp();

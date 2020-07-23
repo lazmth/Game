@@ -267,7 +267,8 @@ public class AnimatedMeshesLoader extends StaticMeshesLoader {
 			Animation animation = new Animation(
 					aiAnimation.mName().dataString(),
 					keyFrames,
-					aiAnimation.mDuration() * aiAnimation.mTicksPerSecond());
+					aiAnimation.mDuration(),
+					aiAnimation.mTicksPerSecond());
 			animations.put(animation.getName(), animation);
 		}
 		

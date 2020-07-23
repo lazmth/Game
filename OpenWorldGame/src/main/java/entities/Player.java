@@ -4,10 +4,11 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 import models.TexturedModel;
+import models.animatedModel.AnimatedModel;
 import terrain.Terrain;
 import window.Window;
 
-public class Player extends Entity {
+public class Player extends AnimatedEntity {
 	
 	private static float runSpeed;
 	private static float turnSpeed = 160;
@@ -19,8 +20,8 @@ public class Player extends Entity {
 	private float currentSpeed = 0;
 	private float currentTurnSpeed = 0;
 	private float currentVerticalSpeed = 0;
-
-	public Player(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
+	
+	public Player(AnimatedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
 		super(model, position, rotX, rotY, rotZ, scale);
 		
 	}
