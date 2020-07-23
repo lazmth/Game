@@ -2,6 +2,7 @@ package entities;
 
 import org.joml.Vector3f;
 
+import animation.Animation;
 import models.animatedModel.AnimatedModel;
 
 public class AnimatedEntity {
@@ -21,6 +22,16 @@ public class AnimatedEntity {
 		this.rotY = rotY;
 		this.rotZ = rotZ;
 		this.scale = scale;
+	}
+	
+	public void updateAnimation() {
+		model.getCurrentAnimation().update();
+	}
+	
+	public void setCurrentAnimation(String animationName) {
+		Animation animation = model.getAnimation(animationName);
+		model.setCurrentAnimation(animation);
+		model.getCurrentAnimation().reset();
 	}
 
 	public void increasePosition(float dx, float dy, float dz) {
