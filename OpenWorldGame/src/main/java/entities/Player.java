@@ -49,9 +49,9 @@ public class Player extends AnimatedEntity {
 	
 	public void checkInputs() {
 		if (Window.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)) {
-			runSpeed = 300;
+			runSpeed = 200;
 		} else {
-			runSpeed = 100;
+			runSpeed = 40;
 		}
 		
 		if (Window.isKeyPressed(GLFW.GLFW_KEY_W)) {

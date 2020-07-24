@@ -97,9 +97,14 @@ public class GameLoop {
 				}
 				
 			}
+			scene.getAnimatedEntities().get(0).getModel().getCurrentAnimation().update();
 			
-			if (Window.isKeyPressed(GLFW.GLFW_KEY_U)) {
-				scene.getAnimatedEntities().get(0).getModel().getCurrentAnimation().update();
+			if (Window.isKeyPressed(GLFW.GLFW_KEY_UP)) {
+				scene.getPlayer().getModel().getCurrentAnimation().increaseSpeedFactor();
+			}
+			
+			if (Window.isKeyPressed(GLFW.GLFW_KEY_DOWN)) {
+				scene.getPlayer().getModel().getCurrentAnimation().decreaseSpeedFactor();
 			}
 			
 			if (benchmarkActive) {

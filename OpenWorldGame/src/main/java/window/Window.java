@@ -7,7 +7,6 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_CORE_PROFILE;
 import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_FORWARD_COMPAT;
 import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE;
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
@@ -41,6 +40,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import java.nio.DoubleBuffer;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -115,7 +115,7 @@ public class Window {
                 (vidmode.height() - HEIGHT) / 2
         );
 
-        // Make the OpenGL context current
+        // Link window to the OpenGL context
         glfwMakeContextCurrent(windowID);
         // Enable v-sync
         if (VSYNC) {
@@ -147,11 +147,11 @@ public class Window {
     }
 	
 	public static boolean isKeyPressed(int keyCode) {
-    	return glfwGetKey(windowID, keyCode) == GLFW_PRESS;
+    	return glfwGetKey(windowID, keyCode) == GLFW.GLFW_PRESS;
     }
 	
 	public static boolean isMouseButtonPressed(int buttonCode) {
-		return glfwGetMouseButton(windowID, buttonCode) == GLFW_PRESS;
+		return glfwGetMouseButton(windowID, buttonCode) == GLFW.GLFW_PRESS;
 	}
 	
 	public static boolean windowShouldClose() {

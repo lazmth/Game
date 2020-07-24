@@ -47,8 +47,8 @@ public class Scene {
 		this.world = new World(500);
 		initEntities();
 		initAnimatedEntities();
-		initGUI();
-		//initWaters();
+		//initGUI();
+		initWaters();
 	}
 	
 	public void initEntities() {
@@ -108,7 +108,7 @@ public class Scene {
 		Animation bakedAnimation = testAnimatedModel.getAnimation("Armature|Star Jump");
 		testAnimatedModel.setCurrentAnimation(bakedAnimation);
 		
-		player = new Player(testAnimatedModel, new Vector3f(0,0,0), 0, 0, 0, 0.08f);
+		player = new Player(testAnimatedModel, new Vector3f(0,0,0), 0, 0, 0, 0.04f);
 		animatedEntities.add(player);
 
 	}

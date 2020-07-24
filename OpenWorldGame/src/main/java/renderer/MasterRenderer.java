@@ -108,7 +108,7 @@ public class MasterRenderer {
 		entityRenderer.render(entities);
 		basicShader.stop();
 		
-		animatedModelRenderer.render(animatedEntities, camera);
+		animatedModelRenderer.render(animatedEntities, lights, camera);
 		
 		normalMapRenderer.render(normalMappedEntities, clipPlane, lights, camera);
 		

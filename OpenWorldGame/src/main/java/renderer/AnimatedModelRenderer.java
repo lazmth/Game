@@ -10,9 +10,9 @@ import org.lwjgl.opengl.GL30;
 
 import entities.AnimatedEntity;
 import entities.Camera;
+import entities.Light;
 import models.RawModel;
 import models.TexturedModel;
-import models.animatedModel.AnimatedModel;
 import shaders.AnimatedModelShader;
 import toolbox.Maths;
 
@@ -27,7 +27,7 @@ public class AnimatedModelRenderer {
 		shader.stop();
 	}
 	
-	public void render(List<AnimatedEntity> entities, Camera camera) {
+	public void render(List<AnimatedEntity> entities, List<Light> lights, Camera camera) {
 		prepare(camera);
 
 		shader.loadModelMatrix(Maths.createTransformationMatrix(
@@ -36,6 +36,8 @@ public class AnimatedModelRenderer {
 				entities.get(0).getRotY(), 
 				entities.get(0).getRotZ(), 
 				entities.get(0).getScale()));
+		
+		shader.loadLights(lights);
 		
 		
 		for (AnimatedEntity entity : entities) {

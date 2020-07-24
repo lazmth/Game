@@ -15,6 +15,8 @@ public class Animation {
 	
 	private double durationSeconds;
 	
+	private double speedFactor = 1.0f;
+	
 	/**
 	 * 
 	 * @param name
@@ -58,23 +60,26 @@ public class Animation {
 		timeCounter = 0;
 	}
 	
+	public void increaseSpeedFactor() {
+		this.speedFactor += 0.01f;
+	}
+	
+	public void decreaseSpeedFactor() {
+		double newSpeed = speedFactor - 0.01f;
+		if (newSpeed > 0) {
+			speedFactor = newSpeed;
+		}
+	}
+	
 	public void update() {
-//		timeCounter += Window.getLastFrameTime();
-//		
-//		double frameLength = durationSeconds / (keyFrames.size());
-//		
-//		while (timeCounter >= frameLength) {
-//			currentFrame++;
-//			timeCounter -= frameLength;
-//			currentFrame %= keyFrames.size();
-//		}
-
+		timeCounter += Window.getLastFrameTime();
 		
-		int nextFrame = currentFrame + 1;
-		if (nextFrame > keyFrames.size() - 1) {
-			currentFrame = 0;
-		} else {
-			currentFrame = nextFrame;
+		double frameLength = durationSeconds / (keyFrames.size()) * speedFactor;
+		
+		while (timeCounter >= frameLength) {
+			currentFrame++;
+			timeCounter -= frameLength;
+			currentFrame %= keyFrames.size();
 		}
 	}
 }

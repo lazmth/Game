@@ -48,7 +48,6 @@ public class AnimatedMeshesLoader extends StaticMeshesLoader {
 				Assimp.aiProcess_GenSmoothNormals |
 				Assimp.aiProcess_JoinIdenticalVertices |
 				Assimp.aiProcess_Triangulate |
-				Assimp.aiProcess_FixInfacingNormals |
 				Assimp.aiProcess_LimitBoneWeights);
 	}
 	
