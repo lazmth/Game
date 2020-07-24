@@ -29,7 +29,7 @@ import world.World;
 
 public class Scene {
 	
-	private List<Terrain> terrains = new ArrayList<Terrain>();
+	private List<Terrain> terrains;
 	private List<Entity> entites = new ArrayList<Entity>();
 	private List<Entity> normalMappedEntities = new ArrayList<Entity>();
 	private List<AnimatedEntity> animatedEntities = new ArrayList<>();
@@ -49,6 +49,8 @@ public class Scene {
 		initAnimatedEntities();
 		//initGUI();
 		initWaters();
+		
+		terrains = world.getTerrains();
 	}
 	
 	public void initEntities() {

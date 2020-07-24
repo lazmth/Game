@@ -13,14 +13,16 @@ import entities.AnimatedEntity;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import game.Scene;
 import loader.Loader;
 import models.TexturedModel;
-import models.animatedModel.AnimatedModel;
 import normalMappingRenderer.NormalMappingRenderer;
 import shaders.BasicShader;
 import shaders.TerrainShader;
 import skybox.SkyboxRenderer;
 import terrain.Terrain;
+import water.WaterRenderer;
+import water.WaterShader;
 
 public class MasterRenderer {
 	
@@ -44,6 +46,8 @@ public class MasterRenderer {
 	private SkyboxRenderer skyboxRenderer;
 	private NormalMappingRenderer normalMapRenderer;
 	
+	private WaterRenderer waterRenderer;
+	
 	private AnimatedModelRenderer animatedModelRenderer;
 	
 	private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
@@ -61,6 +65,7 @@ public class MasterRenderer {
 		skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
 		normalMapRenderer = new NormalMappingRenderer(projectionMatrix);
 		animatedModelRenderer = new AnimatedModelRenderer(projectionMatrix);
+		waterRenderer = new WaterRenderer(loader, projectionMatrix);
 	}
 	
 	public static void enableCulling() {
@@ -75,47 +80,46 @@ public class MasterRenderer {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 	}
 	
-	public void renderScene(List<Entity> entities, List<AnimatedEntity> animatedEntities, List<Entity> normalMappedEntities, List<Terrain> terrains,
-			List<Light> lightSources, Camera camera, Vector4f clipPlane) {
+	public void renderScene(Scene scene, Camera camera, Vector4f clipPlane) {
 		
-		for (Entity entity : entities) {
+		for (Entity entity : scene.getEntites()) {
 			processEntity(entity);
 		}
 		
-		for (Entity entity : normalMappedEntities) {
+		for (Entity entity : scene.getNormalMappedEntities()) {
 			processNormalMappedEntity(entity);
 		}
 		
-		for (Terrain terrain : terrains) {
+		for (Terrain terrain : scene.getTerrains()) {
 			processTerrain(terrain);
 		}
 		
-		for (AnimatedEntity entity : animatedEntities) {
+		for (AnimatedEntity entity : scene.getAnimatedEntities()) {
 			processAnimatedModel(entity);
 		}
 		
-		render(lightSources, camera, clipPlane);
+		render(scene, camera, clipPlane);
 	}
 	
-	private void render(List<Light> lights, Camera camera, Vector4f clipPlane) {
+	private void render(Scene scene, Camera camera, Vector4f clipPlane) {
 		prepare();
 		basicShader.start();
 		// Loading sky colour each frame so we can change it dynamically later.
 		basicShader.loadSkyColour(FOG_R, FOG_G, FOG_B);
 		basicShader.loadClipPlane(clipPlane);
-		basicShader.loadLights(lights);
+		basicShader.loadLights(scene.getLights());
 		basicShader.loadViewMatrix(camera);
 		entityRenderer.render(entities);
 		basicShader.stop();
 		
-		animatedModelRenderer.render(animatedEntities, lights, camera);
+		animatedModelRenderer.render(animatedEntities, scene.getLights(), camera);
 		
-		normalMapRenderer.render(normalMappedEntities, clipPlane, lights, camera);
+		normalMapRenderer.render(normalMappedEntities, clipPlane, scene.getLights(), camera);
 		
 		terrainShader.start();
 		terrainShader.loadSkyColour(FOG_R, FOG_G, FOG_B);
 		terrainShader.loadClipPlane(clipPlane);
-		terrainShader.loadLights(lights);
+		terrainShader.loadLights(scene.getLights());
 		terrainShader.loadViewMatrix(camera);
 		terrainRenderer.render(terrains);
 		terrainShader.stop();
@@ -126,6 +130,17 @@ public class MasterRenderer {
 		entities.clear();
 		normalMappedEntities.clear();
 		animatedEntities.clear();
+	}
+	
+	/**
+	 * Has to be called separately to render scene as rendering the water involves
+	 * rendering the scene to FBOs. Have to be separate in order to avoid an
+	 * infinite loop.
+	 * @param scene
+	 * @param camera
+	 */
+	public void renderWater(Scene scene, Camera camera) {
+		waterRenderer.render(scene, camera, this);
 	}
 	
 	public void processTerrain(Terrain terrain) {
@@ -171,6 +186,7 @@ public class MasterRenderer {
 		basicShader.cleanUp();
 		terrainShader.cleanUp();
 		normalMapRenderer.cleanUp();
+		waterRenderer.cleanUp();
 	}
 	
 	public Matrix4f getProjectionMatrix() {
