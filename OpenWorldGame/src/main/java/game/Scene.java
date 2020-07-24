@@ -44,12 +44,11 @@ public class Scene {
 	
 	public Scene(Loader loader) {
 		this.loader = loader;
-		this.world = new World(500);
 		initEntities();
 		initAnimatedEntities();
 		//initGUI();
 		initWaters();
-		
+		this.world = new World(500, player);
 		terrains = world.getTerrains();
 	}
 	

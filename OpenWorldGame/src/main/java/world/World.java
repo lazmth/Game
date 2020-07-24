@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.joml.Vector3f;
 
+import entities.Player;
 import terrain.Terrain;
 
 public class World {
@@ -18,9 +19,16 @@ public class World {
 	private List<Terrain> terrains = new ArrayList<Terrain>();
 	
 	private Vector3f initialPlayerPos = new Vector3f(0,0,0);
+	private Player player;
 	
-	public World(int worldSize) {
+	// Used to check if the player has moved to a new chunk.
+	private int[] previousGridPos = new int[2];
+	private int[] gridPos = new int[2];
+	private int[] gridDelta = new int[2];
+	
+	public World(int worldSize, Player player) {
 		this.worldSize = worldSize;
+		this.player = player;
 		chunks = new Chunk[worldSize][worldSize];
 		connectChunks();
 		initialLoad(chunkViewDistance);
@@ -60,63 +68,70 @@ public class World {
 	
 	// Both parameters will have to be worked out in the main game loop and so
 	// it is not worth working them out again.
-	public void update(int[] initialPos, int[] newPos, int[] delta) {
+	public void update() {
+		previousGridPos = gridPos; 
+		gridPos = getGridPosition(player.getPosition());
 		
-		if (delta[0] != 0 && delta[1] != 0) {
-			int removeIndexX = initialPos[0] - delta[0] * chunkViewDistance;
-			int addIndexX = newPos[0] + delta[0] * chunkViewDistance;
-			int removeIndexY = initialPos[1] - delta[1] * chunkViewDistance;
-			int addIndexY = newPos[1] + delta[1] * chunkViewDistance;
+		if ((gridPos[0] != previousGridPos[0]) || (gridPos[1] != previousGridPos[1])) {
+			gridDelta[0] = gridPos[0] - previousGridPos[0];
+			gridDelta[1] = gridPos[1] - previousGridPos[1];
 			
-			for (int i=newPos[0] - chunkViewDistance; i <= newPos[0] + chunkViewDistance; i++) {
-				if (i>=0 && i<=worldSize) {
-					if (removeIndexY>=0 && removeIndexY<=worldSize) {
-						chunks[removeIndexY][i].unload(this);
-					}
-					if (addIndexY>=0 && addIndexY<=worldSize) {
-						chunks[addIndexY][i].load(this);
+			if (gridDelta[0] != 0 && gridDelta[1] != 0) {
+				int removeIndexX = previousGridPos[0] - gridDelta[0] * chunkViewDistance;
+				int addIndexX = gridPos[0] + gridDelta[0] * chunkViewDistance;
+				int removeIndexY = previousGridPos[1] - gridDelta[1] * chunkViewDistance;
+				int addIndexY = gridPos[1] + gridPos[1] * chunkViewDistance;
+				
+				for (int i=gridPos[0] - chunkViewDistance; i <= gridPos[0] + chunkViewDistance; i++) {
+					if (i>=0 && i<=worldSize) {
+						if (removeIndexY>=0 && removeIndexY<=worldSize) {
+							chunks[removeIndexY][i].unload(this);
+						}
+						if (addIndexY>=0 && addIndexY<=worldSize) {
+							chunks[addIndexY][i].load(this);
+						}
 					}
 				}
-			}
-			
-			// Saves repeating the actions for the same chunk on the corners of the 'square' around the player.
-			for (int j=newPos[1] - chunkViewDistance + 1; j <= newPos[1] + chunkViewDistance - 1; j++) {
-				if (j>=0 && j<=worldSize) {
-					if (removeIndexX>=0 && removeIndexX<=worldSize) {
-						chunks[j][removeIndexX].unload(this);
-					}
-					if (addIndexX>=0 && addIndexX<=worldSize) {
-						chunks[j][addIndexX].load(this);
-					}
-				}
-			}
-		} 
-		else if (delta[0] != 0) {
-			int removeIndexX = initialPos[0] - delta[0] * chunkViewDistance;
-			int addIndexX = newPos[0] + delta[0] * chunkViewDistance;
-			
-			for (int j=newPos[1] - chunkViewDistance; j <= newPos[1] + chunkViewDistance; j++) {
-				if (j>=0 && j<=worldSize) {
-					if (removeIndexX>=0 && removeIndexX<=worldSize) {
-						chunks[j][removeIndexX].unload(this);
-					}
-					if (addIndexX>=0 && addIndexX<=worldSize) {
-						chunks[j][addIndexX].load(this);
+				
+				// Saves repeating the actions for the same chunk on the corners of the 'square' around the player.
+				for (int j=gridPos[1] - chunkViewDistance + 1; j <= gridPos[1] + chunkViewDistance - 1; j++) {
+					if (j>=0 && j<=worldSize) {
+						if (removeIndexX>=0 && removeIndexX<=worldSize) {
+							chunks[j][removeIndexX].unload(this);
+						}
+						if (addIndexX>=0 && addIndexX<=worldSize) {
+							chunks[j][addIndexX].load(this);
+						}
 					}
 				}
-			}
-		} 
-		else if (delta[1] != 0) {
-			int removeIndexY = initialPos[1] - delta[1] * chunkViewDistance;
-			int addIndexY = newPos[1] + delta[1] * chunkViewDistance;
-			
-			for (int i=newPos[0] - chunkViewDistance; i <= newPos[0] + chunkViewDistance; i++) {
-				if (i>=0 && i<=worldSize) {
-					if (removeIndexY>=0 && removeIndexY<=worldSize) {
-						chunks[removeIndexY][i].unload(this);
+			} 
+			else if (gridDelta[0] != 0) {
+				int removeIndexX = previousGridPos[0] - gridDelta[0] * chunkViewDistance;
+				int addIndexX = gridPos[0] + gridDelta[0] * chunkViewDistance;
+				
+				for (int j=gridPos[1] - chunkViewDistance; j <= gridPos[1] + chunkViewDistance; j++) {
+					if (j>=0 && j<=worldSize) {
+						if (removeIndexX>=0 && removeIndexX<=worldSize) {
+							chunks[j][removeIndexX].unload(this);
+						}
+						if (addIndexX>=0 && addIndexX<=worldSize) {
+							chunks[j][addIndexX].load(this);
+						}
 					}
-					if (addIndexY>=0 && addIndexY<=worldSize) {
-						chunks[addIndexY][i].load(this);
+				}
+			} 
+			else if (gridDelta[1] != 0) {
+				int removeIndexY = previousGridPos[1] - gridDelta[1] * chunkViewDistance;
+				int addIndexY = gridPos[1] + gridDelta[1] * chunkViewDistance;
+				
+				for (int i=gridPos[0] - chunkViewDistance; i <= gridPos[0] + chunkViewDistance; i++) {
+					if (i>=0 && i<=worldSize) {
+						if (removeIndexY>=0 && removeIndexY<=worldSize) {
+							chunks[removeIndexY][i].unload(this);
+						}
+						if (addIndexY>=0 && addIndexY<=worldSize) {
+							chunks[addIndexY][i].load(this);
+						}
 					}
 				}
 			}

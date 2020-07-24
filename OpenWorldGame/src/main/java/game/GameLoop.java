@@ -9,17 +9,12 @@ import fontRendering.TextMaster;
 import loader.Loader;
 import particles.ParticleMaster;
 import renderer.MasterRenderer;
-import toolbox.MousePicker;
 import window.Window;
 
 public class GameLoop {
 	
 	private static boolean benchmarkActive = false;
 	private static boolean benchmarkFinished = false;
-	
-	private static int[] previousGridPos = new int[2];
-	private static int[] gridPos = new int[2];
-	private static int[] gridDelta = new int[2];
 	
 	public static void main(String[] args) {
 		Window.createDisplay();
@@ -38,21 +33,11 @@ public class GameLoop {
 			
 			ParticleMaster.update(camera);
 			camera.move();
+			scene.getWorld().update();
 			scene.getAnimatedEntities().get(0).getModel().getCurrentAnimation().update();
-			
-			// Checking whether we have moved to a new world chunk.
-			previousGridPos = gridPos; 
-			gridPos = scene.getWorld().getGridPosition(scene.getPlayer().getPosition());
-			
-			if ((gridPos[0] != previousGridPos[0]) || (gridPos[1] != previousGridPos[1])) {
-				gridDelta[0] = gridPos[0] - previousGridPos[0];
-				gridDelta[1] = gridPos[1] - previousGridPos[1];
-				scene.getWorld().update(previousGridPos, gridPos, gridDelta);
-			}
-			
-			scene.getPlayer().move(scene.getWorld().getChunk(gridPos[0], gridPos[1]).getTerrain());
-			//////////////////////////////////////////////////////
+			scene.getPlayer().move(scene.getWorld().getChunk(0, 0).getTerrain());
 
+			// ******************** BENCHMARK ************************
 			if (Window.isKeyPressed(GLFW.GLFW_KEY_T)) {
 				if (!benchmarkActive) {
 					scene.getPlayer().setPosition(new Vector3f(200, 0, 140));
@@ -70,6 +55,8 @@ public class GameLoop {
 					benchmarkActive = false;
 				}
 			}
+			
+			// *******************************************************
 
 			// Clip plane is set very high here just in case the request for clip disable above doesn't work.
 			renderer.renderGame(
