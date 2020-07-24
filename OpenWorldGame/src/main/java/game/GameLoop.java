@@ -3,21 +3,13 @@ package game;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
-
 
 import entities.Camera;
 import fontRendering.TextMaster;
-import guis.GuiRenderer;
 import loader.Loader;
 import particles.ParticleMaster;
-import particles.ParticleTexture;
 import renderer.MasterRenderer;
 import toolbox.MousePicker;
-import water.WaterFrameBuffers;
-import water.WaterRenderer;
-import water.WaterShader;
 import window.Window;
 
 public class GameLoop {
@@ -33,28 +25,20 @@ public class GameLoop {
 		Window.createDisplay();
 		
 		Loader loader = new Loader();
-		TextMaster.init(loader);
-		
 		Scene scene = new Scene(loader);
-		
-		GuiRenderer guiRenderer = new GuiRenderer(loader);
-		
 		Camera camera = new Camera(scene.getPlayer());
 		MasterRenderer renderer = new MasterRenderer(loader);
-		
-		MousePicker picker = new MousePicker(
-				camera,
-				renderer.getProjectionMatrix(),
-				scene.getWorld().getTerrains().get(0)
-				);
-		
+		TextMaster.init(loader);
 		ParticleMaster.init(loader, renderer.getProjectionMatrix());
-		ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particleAtlas.png"), 4);
 		
 		// *************** MAIN GAME LOOP *********************
 		
 		while (!Window.windowShouldClose()) {
 			Window.updateMousePosition();
+			
+			ParticleMaster.update(camera);
+			camera.move();
+			scene.getAnimatedEntities().get(0).getModel().getCurrentAnimation().update();
 			
 			// Checking whether we have moved to a new world chunk.
 			previousGridPos = gridPos; 
@@ -69,8 +53,6 @@ public class GameLoop {
 			scene.getPlayer().move(scene.getWorld().getChunk(gridPos[0], gridPos[1]).getTerrain());
 			//////////////////////////////////////////////////////
 
-			camera.move();
-			
 			if (Window.isKeyPressed(GLFW.GLFW_KEY_T)) {
 				if (!benchmarkActive) {
 					scene.getPlayer().setPosition(new Vector3f(200, 0, 140));
@@ -81,8 +63,6 @@ public class GameLoop {
 					System.out.println("Benchmark is currently active.");
 				}
 			} 
-
-			scene.getAnimatedEntities().get(0).getModel().getCurrentAnimation().update();
 			
 			if (benchmarkActive) {
 				benchmarkFinished = Window.benchMark();
@@ -90,39 +70,24 @@ public class GameLoop {
 					benchmarkActive = false;
 				}
 			}
-			
-			ParticleMaster.update(camera);
-			
-			// Rendering to FBOs for water textures.
-			
-			
+
 			// Clip plane is set very high here just in case the request for clip disable above doesn't work.
-			renderer.renderScene(
+			renderer.renderGame(
 					scene,
 					camera,
 					new Vector4f(0, 10000, 0, 1000)
 					);
-			renderer.renderWater(scene, camera);
 			
-			
-			ParticleMaster.renderParticles(camera);
-			
-			guiRenderer.render(scene.getGUIs());
-			//TextMaster.render();
-			
-
 			Window.updateDisplay();
 			
 		}
 		
 		TextMaster.cleanUp();
 		ParticleMaster.cleanUp();
-		renderer.cleanUp();
-		guiRenderer.cleanUp();
 		Window.destroyWindow();
 		Window.stopGLFW();
+		renderer.cleanUp();
 		loader.cleanUp();
 	}
-
 
 }

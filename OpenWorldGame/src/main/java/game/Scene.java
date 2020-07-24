@@ -107,7 +107,7 @@ public class Scene {
 			e.printStackTrace();
 		}
 		
-		Animation bakedAnimation = testAnimatedModel.getAnimation("Armature|Star Jump");
+		Animation bakedAnimation = testAnimatedModel.getAnimation("Armature|Walk 2");
 		testAnimatedModel.setCurrentAnimation(bakedAnimation);
 		
 		player = new Player(testAnimatedModel, new Vector3f(0,0,0), 0, 0, 0, 0.04f);
@@ -169,7 +169,5 @@ public class Scene {
 	public Player getPlayer() {
 		return player;
 	}
-	
-
 
 }

@@ -12,17 +12,18 @@ import org.lwjgl.opengl.GL11;
 import entities.AnimatedEntity;
 import entities.Camera;
 import entities.Entity;
-import entities.Light;
+import fontRendering.TextMaster;
 import game.Scene;
+import guis.GuiRenderer;
 import loader.Loader;
 import models.TexturedModel;
 import normalMappingRenderer.NormalMappingRenderer;
+import particles.ParticleMaster;
 import shaders.BasicShader;
 import shaders.TerrainShader;
 import skybox.SkyboxRenderer;
 import terrain.Terrain;
 import water.WaterRenderer;
-import water.WaterShader;
 
 public class MasterRenderer {
 	
@@ -38,17 +39,15 @@ public class MasterRenderer {
 	private Matrix4f projectionMatrix;
 
 	private BasicShader basicShader = new BasicShader();
-	private EntityRenderer entityRenderer;
-	
 	private TerrainShader terrainShader = new TerrainShader();
-	private TerrainRenderer terrainRenderer;
 	
+	private EntityRenderer entityRenderer;
+	private TerrainRenderer terrainRenderer;
 	private SkyboxRenderer skyboxRenderer;
 	private NormalMappingRenderer normalMapRenderer;
-	
 	private WaterRenderer waterRenderer;
-	
 	private AnimatedModelRenderer animatedModelRenderer;
+	private GuiRenderer guiRenderer;
 	
 	private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
 	private Map<TexturedModel, List<Entity>> normalMappedEntities = new HashMap<TexturedModel, List<Entity>>();
@@ -66,6 +65,7 @@ public class MasterRenderer {
 		normalMapRenderer = new NormalMappingRenderer(projectionMatrix);
 		animatedModelRenderer = new AnimatedModelRenderer(projectionMatrix);
 		waterRenderer = new WaterRenderer(loader, projectionMatrix);
+		guiRenderer = new GuiRenderer(loader);
 	}
 	
 	public static void enableCulling() {
@@ -78,6 +78,12 @@ public class MasterRenderer {
 	 */
 	public static void disableCulling() {
 		GL11.glDisable(GL11.GL_CULL_FACE);
+	}
+	
+	public void renderGame(Scene scene, Camera camera, Vector4f clipPlane) {
+		renderScene(scene, camera, clipPlane);
+		renderWater(scene, camera);
+		renderGUI(scene);
 	}
 	
 	public void renderScene(Scene scene, Camera camera, Vector4f clipPlane) {
@@ -126,6 +132,9 @@ public class MasterRenderer {
 		
 		skyboxRenderer.render(camera, FOG_R, FOG_G, FOG_B);
 		
+		ParticleMaster.renderParticles(camera);
+		TextMaster.render();
+		
 		terrains.clear();
 		entities.clear();
 		normalMappedEntities.clear();
@@ -139,8 +148,12 @@ public class MasterRenderer {
 	 * @param scene
 	 * @param camera
 	 */
-	public void renderWater(Scene scene, Camera camera) {
+	private void renderWater(Scene scene, Camera camera) {
 		waterRenderer.render(scene, camera, this);
+	}
+	
+	private void renderGUI(Scene scene) {
+		guiRenderer.render(scene.getGUIs());
 	}
 	
 	public void processTerrain(Terrain terrain) {
@@ -187,6 +200,7 @@ public class MasterRenderer {
 		terrainShader.cleanUp();
 		normalMapRenderer.cleanUp();
 		waterRenderer.cleanUp();
+		guiRenderer.cleanUp();
 	}
 	
 	public Matrix4f getProjectionMatrix() {
