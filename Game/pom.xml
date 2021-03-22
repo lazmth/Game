@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>OpenWorldGame</groupId>
+  <artifactId>OpenWorldGame</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  
+  <properties>
+		<lwjgl.version>3.2.3</lwjgl.version>
+		<lwjgl.natives>natives-windows</lwjgl.natives>
+		<!-- I was getting an error for which Maven provides the following comment: This or
+		 a similar warning is emitted by a plugin that processes plain text files but has 
+		not been configured to use a specific file encoding. This should fix it.  -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+     	<maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+  
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.lwjgl</groupId>
+				<artifactId>lwjgl-bom</artifactId>
+				<version>${lwjgl.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>billy.smith</groupId>
+			<artifactId>Engine</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-glfw</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-opengl</artifactId>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.joml</groupId>
+		    <artifactId>joml</artifactId>
+		    <version>1.9.25</version>
+		</dependency>
+		
+	</dependencies>
+  
+</project>
